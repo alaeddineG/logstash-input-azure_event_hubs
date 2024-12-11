@@ -1,4 +1,3 @@
-# encoding: utf-8
 require "logstash/util/loggable"
 module LogStash
   module Inputs
@@ -11,8 +10,10 @@ module LogStash
           @queue = queue
           @codec = codec
           @checkpoint_interval = checkpoint_interval
+          @last_checkpoint = Time.now.to_i
           @decorator = decorator
           @meta_data = meta_data
+          @batch_counter = 0
           @logger = self.logger
 
         end
@@ -29,8 +30,8 @@ module LogStash
           @logger.debug("Event Hub: #{context.getEventHubPath.to_s}, Partition: #{context.getPartitionId.to_s} is processing a batch of size #{batch.size}.") if @logger.debug?
           last_payload = nil
           batch_size = 0
+          @batch_counter += 1
           batch.each do |payload|
-            last_checkpoint = Time.now.to_i
             bytes = payload.getBytes
             batch_size += bytes.size
             @logger.trace("Event Hub: #{context.getEventHubPath.to_s}, Partition: #{context.getPartitionId.to_s}, Offset: #{payload.getSystemProperties.getOffset.to_s},"+
@@ -48,15 +49,15 @@ module LogStash
                 event.set("[@metadata][azure_event_hubs][sequence]", payload.getSystemProperties.getSequenceNumber)
                 event.set("[@metadata][azure_event_hubs][timestamp]",payload.getSystemProperties.getEnqueuedTime.getEpochSecond)
                 event.set("[@metadata][azure_event_hubs][event_size]", bytes.size)
-                event.set("[@metadata][azure_event_hubs][user_properties]", payload.getProperties)
               end
               @queue << event
               if @checkpoint_interval > 0
                 now = Time.now.to_i
-                since_last_check_point = now - last_checkpoint
-                if since_last_check_point >= @checkpoint_interval
+                since_last_check_point = now - @last_checkpoint
+                if since_last_check_point >= 300
                   context.checkpoint(payload).get
-                  last_checkpoint = now
+                  @logger.debug("Event Hub: #{context.getEventHubPath.to_s}, Partition: #{context.getPartitionId.to_s} finished checkpointing.") if @logger.debug?
+                  @last_checkpoint = now
                 end
               end
             end
@@ -65,7 +66,9 @@ module LogStash
 
           @codec.flush
           #always create checkpoint at end of onEvents in case of sparse events
-          context.checkpoint(last_payload).get if last_payload
+          #if ((@batch_counter % 5) == 0)
+          #  context.checkpoint(last_payload).get if last_payload
+          #end
           @logger.debug("Event Hub: #{context.getEventHubPath.to_s}, Partition: #{context.getPartitionId.to_s} finished processing a batch of #{batch_size} bytes.") if @logger.debug?
         end
 
@@ -76,8 +79,3 @@ module LogStash
     end
   end
 end
-
-
-
-
-

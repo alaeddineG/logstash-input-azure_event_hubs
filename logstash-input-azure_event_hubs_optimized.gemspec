@@ -1,7 +1,7 @@
 GEM_VERSION = File.read(File.expand_path(File.join(File.dirname(__FILE__), "VERSION"))).strip unless defined?(GEM_VERSION)
 
 Gem::Specification.new do |s|
-  s.name          = 'logstash-input-azure_event_hubs'
+  s.name          = 'logstash-input-azure_event_hubs_optimized'
   s.version       = GEM_VERSION
   s.licenses      = ['Apache-2.0']
   s.summary       = 'Consumes events from Azure Event Hubs for use with Logstash'

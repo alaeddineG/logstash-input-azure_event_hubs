@@ -1,5 +1,5 @@
 # encoding: utf-8
-require "logstash-input-azure_event_hubs"
+require "logstash-input-azure_event_hubs_optimized"
 require "logstash/inputs/base"
 require "logstash/namespace"
 require "stud/interval"
