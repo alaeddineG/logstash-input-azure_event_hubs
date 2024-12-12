@@ -8,7 +8,7 @@ require "logstash/inputs/error_notification_handler"
 require "logstash/inputs/named_thread_factory"
 require "logstash/inputs/look_back_position_provider"
 
-class LogStash::Inputs::AzureEventHubs < LogStash::Inputs::Base
+class LogStash::Inputs::AzureEventHubsOptimized < LogStash::Inputs::Base
 
   java_import com.microsoft.azure.eventprocessorhost.EventProcessorHost
   java_import com.microsoft.azure.eventprocessorhost.EventProcessorOptions
@@ -20,7 +20,7 @@ class LogStash::Inputs::AzureEventHubs < LogStash::Inputs::Base
   java_import java.util.concurrent.TimeUnit
   java_import java.time.Duration
 
-  config_name "azure_event_hubs"
+  config_name "azure_event_hubs_optimized"
 
   # This plugin supports two styles of configuration
   # basic - You supply a list of Event Hub connection strings complete with the 'EntityPath' that defines the Event Hub name. All other configuration is shared.
@@ -393,7 +393,7 @@ class LogStash::Inputs::AzureEventHubs < LogStash::Inputs::Base
 
   def run(queue)
     event_hub_threads = []
-    named_thread_factory = LogStash::Inputs::Azure::NamedThreadFactory.new("azure_event_hubs-worker", @id)
+    named_thread_factory = LogStash::Inputs::Azure::NamedThreadFactory.new("azure_event_hubs_optimized-worker", @id)
     scheduled_executor_service = Executors.newScheduledThreadPool(@threads, named_thread_factory)
     @event_hubs_exploded.each do |event_hub|
       event_hub_threads << Thread.new do
