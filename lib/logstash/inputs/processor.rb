@@ -41,14 +41,14 @@ module LogStash
 
               @decorator.call(event)
               if @meta_data
-                event.set("[@metadata][azure_event_hubs][name]", context.getEventHubPath)
-                event.set("[@metadata][azure_event_hubs][consumer_group]", context.getConsumerGroupName)
-                event.set("[@metadata][azure_event_hubs][processor_host]", context.getOwner)
-                event.set("[@metadata][azure_event_hubs][partition]", context.getPartitionId)
-                event.set("[@metadata][azure_event_hubs][offset]", payload.getSystemProperties.getOffset)
-                event.set("[@metadata][azure_event_hubs][sequence]", payload.getSystemProperties.getSequenceNumber)
-                event.set("[@metadata][azure_event_hubs][timestamp]",payload.getSystemProperties.getEnqueuedTime.getEpochSecond)
-                event.set("[@metadata][azure_event_hubs][event_size]", bytes.size)
+                event.set("[@metadata][medfar_logs][name]", context.getEventHubPath)
+                event.set("[@metadata][medfar_logs][consumer_group]", context.getConsumerGroupName)
+                event.set("[@metadata][medfar_logs][processor_host]", context.getOwner)
+                event.set("[@metadata][medfar_logs][partition]", context.getPartitionId)
+                event.set("[@metadata][medfar_logs][offset]", payload.getSystemProperties.getOffset)
+                event.set("[@metadata][medfar_logs][sequence]", payload.getSystemProperties.getSequenceNumber)
+                event.set("[@metadata][medfar_logs][timestamp]",payload.getSystemProperties.getEnqueuedTime.getEpochSecond)
+                event.set("[@metadata][medfar_logs][event_size]", bytes.size)
               end
               @queue << event
               if @checkpoint_interval > 0

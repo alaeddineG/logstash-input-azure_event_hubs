@@ -1,15 +1,15 @@
 # encoding: utf-8
 require "logstash/devutils/rspec/spec_helper"
-require "logstash/inputs/azure_event_hubs_optimized"
+require "logstash/inputs/medfar_logs"
 
 java_import com.microsoft.azure.eventprocessorhost.EventProcessorHost
 java_import com.microsoft.azure.eventprocessorhost.InMemoryCheckpointManager
 java_import com.microsoft.azure.eventprocessorhost.InMemoryLeaseManager
 
-describe LogStash::Inputs::AzureEventHubsOptimized do
+describe LogStash::Inputs::MedfarLogs do
 
 
-  subject(:input) {LogStash::Plugin.lookup("input", "azure_event_hubs_optimized").new(config)}
+  subject(:input) {LogStash::Plugin.lookup("input", "medfar_logs").new(config)}
 
   describe "Event Hubs Configuration -> " do
     shared_examples "an exploded Event Hub config" do |x|
